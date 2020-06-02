@@ -23,7 +23,7 @@ datsoilres2$Estadillo<-datsoilres2$Parcela %>% as.character() %>% str_sub(-4,-1)
 head(datsoilres2)
 datsoilres2$Estadillo<-as.numeric(datsoilres2$Estadillo)
 
-#has one value without data, in special Lugo plot
+#has one value without data, in special Lugo plot, must look the missing values
 datsoil.final<-merge(datsoilres2, plot30, by = "Estadillo", all.x=T)
 
 
