@@ -1,8 +1,35 @@
+###this script shows analysis beteewn soil nutrients anda physical properties along spanish
+###peninsula, these plots were merge with IFN data and the applicated statistical methods like PCA
 
-setwd(dir="C:/Users/Aurelio Diaz/OneDrive - Universidad de Córdoba/Doctorado/Iberian_forest/Soil_analisys/inputs_database")
 
-datsoil <- read.table("290520_Resumen_suelos forestales_HR.csv", stringsAsFactors = F, sep = ";", header = T, dec = ",")
+setwd(dir="C:/Users/Aurelio Diaz/Documents/Onedrive_Aurelio/OneDrive/Doctorate/soil_analysis/inputs_database")
+
+datsoil <- read.table("300520_Resumen_suelos forestales_HR_Repetidos.csv", stringsAsFactors = F, sep = ";", header = T, dec = ",")
 str(datsoil)
+datsoil$Parcela<-as.factor(datsoil$Parcela)
+datsoilres<-read.csv("300520_Resumen_medias_suelos forestales_HR_Repetidos.csv", header = T, sep = ";")
+
+plot30<-read.csv("plot30.csv")
+
+#calculate the mean by group Parcelas
+datsoilres2<-datsoil %>% group_by(Parcela) %>% 
+  summarise(mean(pH), mean(CE), mean(Fh), mean(HR...), mean(Carb...), mean(Ca), mean(Mg), mean(K), 
+            mean(Na), mean(Mn), mean(Zn), mean(Cu), mean(Fe), mean(RAS), mean(P_.ppm.), mean(X.MO), 
+            mean(X.Arcilla), mean(X.Limo), mean(X.Arena))
+
+#now to obtain a dataframe with these data and tha INF data, we must merge by 
+# Estadillo id for that must change as character and after change as numeric again
+datsoilres2$Estadillo<-datsoilres2$Parcela %>% as.character() %>% str_sub(-4,-1)
+head(datsoilres2)
+datsoilres2$Estadillo<-as.numeric(datsoilres2$Estadillo)
+
+#has one value without data, in special Lugo plot
+datsoil.final<-merge(datsoilres2, plot30, by = "Estadillo", all.x=T)
+
+
+
+
+
 
 rownames(datsoil) = datsoil$ï..Local
 head(datsoil)
