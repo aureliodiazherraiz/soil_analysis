@@ -7,7 +7,6 @@ setwd(dir="C:/Users/Aurelio Diaz/Documents/Onedrive_Aurelio/OneDrive/Doctorate/s
 datsoil <- read.table("300520_Resumen_suelos forestales_HR_Repetidos.csv", stringsAsFactors = F, sep = ";", header = T, dec = ",")
 str(datsoil)
 datsoil$Parcela<-as.factor(datsoil$Parcela)
-datsoilres<-read.csv("300520_Resumen_medias_suelos forestales_HR_Repetidos.csv", header = T, sep = ";")
 
 plot30<-read.csv("plot30.csv")
 
