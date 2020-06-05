@@ -11,33 +11,48 @@ datsoil$Parcela<-as.factor(datsoil$Parcela)
 plot30<-read.csv("plot30.csv")
 
 #calculate the mean by group Parcelas
-datsoilres2<-datsoil %>% group_by(Parcela) %>% 
-  summarise(mean(pH), mean(CE), mean(Fh), mean(HR...), mean(Carb...), mean(Ca), mean(Mg), mean(K), 
+#dplyr its conflicting with ggbiplot, for this reason, must require dplyr library
+datsoil.res<-datsoil %>% 
+  dplyr::group_by(Parcela) %>% 
+  dplyr::summarise(mean(pH), mean(CE), mean(Fh), mean(HR...), mean(Carb...), mean(Ca), mean(Mg), mean(K), 
             mean(Na), mean(Mn), mean(Zn), mean(Cu), mean(Fe), mean(RAS), mean(P_.ppm.), mean(X.MO), 
             mean(X.Arcilla), mean(X.Limo), mean(X.Arena))
 
+datsoil.res[, -c(1,6,21)] %>% chart.Correlation()
+datsoil.res[, -c(1,6,21)] %>% log() %>% chart.Correlation()
+datsoil.res[, -c(1,6,21)] %>% log() %>% cor() %>% corrplot(type="upper", order="hclust")
+datsoil.res[, -c(1,6,21)] %>% log() %>% cor() %>% corrplot.mixed(order = "AOE")
+
+
 #now to obtain a dataframe with these data and tha INF data, we must merge by 
 # Estadillo id for that must change as character and after change as numeric again
-datsoilres2$Estadillo<-datsoilres2$Parcela %>% as.character() %>% str_sub(-4,-1)
-head(datsoilres2)
-datsoilres2$Estadillo<-as.numeric(datsoilres2$Estadillo)
+datsoil.res$Estadillo<-datsoil.res$Parcela %>% as.character() %>% str_sub(-4,-1)
+head(datsoil.res)
+datsoil.res$Estadillo<-as.numeric(datsoil.res$Estadillo)
 
 #has one value without data, in special Lugo plot, must look the missing values
-datsoil.final<-merge(datsoilres2, plot30, by = "Estadillo", all.x=T)
+datsoil.final<-merge(datsoil.res, plot30, by = "Estadillo", all.x=T)
+rownames(datsoil.final) = datsoil.final$Parcela
 
-
-
-
-
-
-rownames(datsoil) = datsoil$ï..Local
-head(datsoil)
+head(datsoil.final)
 
 #remove the first column because now have the local names in the index
-datsoil$ï..Local<-NULL
-datsoil<-datsoil[, -c(1,2)]
-head(datsoil)
-chart.Correlation(datsoil)
+datsoil.final$Estadillo<-NULL
+#remove the variables no numeric or no analysis data like the location coordinates
+datsoil.final<-datsoil.final[, -c(1,21:23,30,32,33)]
+head(datsoil.final)
+datsoil.final.log<-log(datsoil.final)
+chart.Correlation(datsoil.final.log)
+
+
+
+
+
+
+
+
+
+
 
 #we can study the possible correlations between variables
 cor(datsoil)
